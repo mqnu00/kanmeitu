@@ -1,5 +1,7 @@
 package com.lzh.kanmeitu.util;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -11,6 +13,7 @@ public class HttpUtils {
     public static String getHttpResult(String urlStr){
         try {
             URL url=new URL(urlStr);
+            Log.d("check", urlStr);
             HttpURLConnection connect=(HttpURLConnection)url.openConnection();
             InputStream input=connect.getInputStream();
             BufferedReader in = new BufferedReader(new InputStreamReader(input));
@@ -22,7 +25,7 @@ public class HttpUtils {
             }
             return sb.toString();
         } catch (Exception e) {
-            System.out.println(e.toString());
+            Log.d("check", e.toString());
             return null;
         }
     }
