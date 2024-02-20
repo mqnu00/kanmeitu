@@ -51,6 +51,7 @@ public class PicPackageAdapter extends BaseAdapter {
         TextView tv_url = inflate.findViewById(R.id.tv_url);
 //        向视图导入数据
         PicPackage picPackage = picPackageList.get(i);
+//        设置图片加载标志和提示
         RequestOptions options = new RequestOptions()
                 .placeholder(R.drawable.loading)
                 .error(R.drawable.loading)
@@ -59,7 +60,6 @@ public class PicPackageAdapter extends BaseAdapter {
                 .load(picPackage.getPreview())
                 .apply(options)
                 .into(iv_preview);
-        Log.d("check", picPackage.getPreview());
         tv_name.setText(picPackage.getName());
         tv_url.setText(picPackage.getUrl());
         return inflate;
