@@ -57,12 +57,9 @@ public class SearchActivity extends AppCompatActivity implements AdapterView.OnI
     @Override
     public void onClick(View view) {
 
-
-
-
         // 创建一个线程池，可以根据需要调整大小
         ExecutorService executorService = Executors.newFixedThreadPool(4);
-// 提交一个Callable任务，返回一个Future对象
+        // 提交一个Callable任务，返回一个Future对象
         Future<SearchResult> future = executorService.submit(new Callable<SearchResult>() {
             @Override
             public SearchResult call() throws Exception {
