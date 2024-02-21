@@ -1,5 +1,6 @@
 package com.lzh.kanmeitu;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
@@ -8,7 +9,6 @@ import com.lzh.kanmeitu.adapter.PicPackageAdapter;
 import com.lzh.kanmeitu.bean.PicPackage;
 import com.lzh.kanmeitu.bean.SearchResult;
 import com.lzh.kanmeitu.util.ApiUtils;
-import com.lzh.kanmeitu.util.ToastUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ public class SearchActivity extends AppCompatActivity implements AdapterView.OnI
 
     private List<String> buttonList = new ArrayList<>();
     private EditText et_search;
-    private ListView lv_pic;
+    private ListView lv_search_result;
     private TextView tv_total_page;
     private TextView tv_count;
     private EditText et_jump_page;
@@ -35,7 +35,7 @@ public class SearchActivity extends AppCompatActivity implements AdapterView.OnI
 //        搜索按钮
         Button bt_search = findViewById(R.id.bt_search);
 //        列表
-        lv_pic = findViewById(R.id.lv_pic);
+        lv_search_result = findViewById(R.id.lv_search_result);
 //        总页数
         tv_total_page = findViewById(R.id.tv_total_page);
 //        图包总数
@@ -43,14 +43,18 @@ public class SearchActivity extends AppCompatActivity implements AdapterView.OnI
 //        跳转页数
         et_jump_page = findViewById(R.id.et_jump_page);
 
-        lv_pic.setOnItemClickListener(this);
+        lv_search_result.setOnItemClickListener(this);
         bt_search.setOnClickListener(this);
     }
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-        ToastUtils.simpleToast(this, searchResult.getPicPackageList().get(i).getName());
+        Intent intent = new Intent(this, PicViewActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("num", "12345");
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
 //    点击搜索
@@ -78,7 +82,7 @@ public class SearchActivity extends AppCompatActivity implements AdapterView.OnI
             tv_total_page.setText(String.format("%d页", searchResult.getTotalPage()));
             List<PicPackage> picPackageList = searchResult.getPicPackageList();
             PicPackageAdapter picPackageAdapter = new PicPackageAdapter(this, picPackageList);
-            lv_pic.setAdapter(picPackageAdapter);
+            lv_search_result.setAdapter(picPackageAdapter);
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
