@@ -3,4 +3,6 @@
     <string name="test">test</string>
     <string name="search_content">搜索内容</string>
     <string name="search">搜索</string>
+    <string name="jump">跳转</string>
+    <string name="jump_page">跳转页数</string>
 </resources>

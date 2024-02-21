@@ -1,7 +1,6 @@
 package com.lzh.kanmeitu.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +44,7 @@ public class PicPackageAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
 //        将布局文件转换成视图
-        View inflate = LayoutInflater.from(context).inflate(R.layout.item_simple, null);
+        View inflate = LayoutInflater.from(context).inflate(R.layout.pic_package_preview, null);
         ImageView iv_preview = inflate.findViewById(R.id.iv_preview);
         TextView tv_name = inflate.findViewById(R.id.tv_name);
         TextView tv_url = inflate.findViewById(R.id.tv_url);
