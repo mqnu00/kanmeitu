@@ -1,6 +1,5 @@
 package com.lzh.kanmeitu.util;
 
-import android.util.Log;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -11,12 +10,21 @@ import java.util.List;
 
 public class ApiUtils {
 
-    private static final String searchUrl = "http://192.168.10.233:8000/search?keyboard=%s&search_id=%s";
+    private static final String host = "192.168.10.233";
+
+    private static final String port = "8000";
+
+    private static final String apiUrl = "http://%s:%s/%s%s";
+
+    private static final String searchPath = "api/kanmeitu/search";
+
+    private static final String searchArgs = "?keyboard=%s&search_id=%s";
 
     public static List<PicPackage> PreviewUrlList (String keyboard, String search_id) {
 
+        String searchArgsF = String.format(searchArgs, keyboard, search_id);
+        String searchUrl = String.format(apiUrl, host, port, searchPath, searchArgsF);
         String jsonStr = HttpUtils.getHttpResult(String.format(searchUrl, keyboard, search_id));
-        Log.d("check", jsonStr == null ? "1" : "0");
         JSONObject jsonObject = JSON.parseObject(jsonStr);
         JSONArray jsonArray = jsonObject.getJSONArray("result");
         List<PicPackage> res = new ArrayList<>();
