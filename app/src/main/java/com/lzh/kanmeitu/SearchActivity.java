@@ -52,7 +52,7 @@ public class SearchActivity extends AppCompatActivity implements AdapterView.OnI
 
         Intent intent = new Intent(this, PicViewActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putString("num", "12345");
+        bundle.putString("picPackage", "12345");
         intent.putExtras(bundle);
         startActivity(intent);
     }

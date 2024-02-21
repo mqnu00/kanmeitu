@@ -1,11 +1,15 @@
 package com.lzh.kanmeitu.bean;
 
 
+import java.util.List;
+
 public class PicPackage {
 
     private String name;
     private String preview;
     private String url;
+
+    private List<String> picUrls;
 
     public PicPackage() {
     }
@@ -38,6 +42,14 @@ public class PicPackage {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public List<String> getPicUrls() {
+        return picUrls;
+    }
+
+    public void setPicUrls(List<String> picUrls) {
+        this.picUrls = picUrls;
     }
 }
 
