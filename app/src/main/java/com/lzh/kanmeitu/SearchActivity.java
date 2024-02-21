@@ -70,7 +70,7 @@ public class SearchActivity extends AppCompatActivity implements AdapterView.OnI
                 // 返回结果给Future对象
                 int page = 0;
                 if (!et_jump_page.getText().toString().equals("")) page = Integer.parseInt(et_jump_page.getText().toString());
-                return ApiUtils.PreviewUrlList(et_search.getText().toString(), "", page);
+                return ApiUtils.PreviewUrlList(et_search.getText().toString(), "", page - 1);
             }
         });
 // 在主线程中通过Future对象获取结果
