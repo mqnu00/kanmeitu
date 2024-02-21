@@ -11,11 +11,16 @@ import com.bumptech.glide.request.RequestOptions;
 import com.lzh.kanmeitu.R;
 import com.lzh.kanmeitu.bean.PicPackage;
 
-public class picViewAdapter extends BaseAdapter {
+public class PicViewAdapter extends BaseAdapter {
 
     private Context context;
 
     private PicPackage picPackage;
+
+    public PicViewAdapter(Context context, PicPackage picPackage) {
+        this.context = context;
+        this.picPackage = picPackage;
+    }
 
     @Override
     public int getCount() {

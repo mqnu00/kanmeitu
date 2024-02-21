@@ -1,9 +1,10 @@
 package com.lzh.kanmeitu.bean;
 
 
+import java.io.Serializable;
 import java.util.List;
 
-public class PicPackage {
+public class PicPackage implements Serializable {
 
     private String name;
     private String preview;
