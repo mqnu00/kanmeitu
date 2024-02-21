@@ -50,7 +50,7 @@ public class PicViewAdapter extends BaseAdapter {
                 .error(R.drawable.loading)
                 .fallback(R.drawable.loading);
         Glide.with(inflate)
-                .load(picPackage.getPreview())
+                .load(picPackage.getPicUrls().get(i))
                 .apply(options)
                 .into(iv_view);
         return inflate;

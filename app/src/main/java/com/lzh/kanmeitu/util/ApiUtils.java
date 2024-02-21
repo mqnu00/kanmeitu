@@ -20,13 +20,17 @@ public class ApiUtils {
 
     private static final String searchPath = "api/kanmeitu/search";
 
+    private static final  String viewPath = "api/kanmeitu/view";
+
     private static final String searchArgs = "?keyboard=%s&search_id=%s&page=%d";
+
+    private static final String viewArgs = "?url=%s";
 
     public static SearchResult PreviewUrlList (String keyboard, String search_id, int page) {
 
         String searchArgsF = String.format(searchArgs, keyboard, search_id, page);
         String searchUrl = String.format(apiUrl, host, port, searchPath, searchArgsF);
-        String jsonStr = HttpUtils.getHttpResult(String.format(searchUrl, keyboard, search_id));
+        String jsonStr = HttpUtils.getHttpResult(searchUrl);
         JSONObject jsonObject = JSON.parseObject(jsonStr);
         JSONArray jsonArray = jsonObject.getJSONArray("result");
         List<PicPackage> picPackageList = new ArrayList<>();
@@ -43,4 +47,17 @@ public class ApiUtils {
         return result;
     }
 
+    public static List<String> picUrlList (String picPackageUrl) {
+
+        String viewF= String.format(viewArgs, picPackageUrl);
+        String viewUrl = String.format(apiUrl, host, port, viewPath, viewF);
+        String jsonStr = HttpUtils.getHttpResult(viewUrl);
+        JSONArray jsonArray = JSON.parseArray(jsonStr);
+        List<String> res = new ArrayList<>();
+        for (Object o: jsonArray) {
+            res.add((String) o);
+        }
+        Log.d("check", res.toString());
+        return res;
+    }
 }
