@@ -1,14 +1,14 @@
 package com.lzh.kanmeitu;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.view.View;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.lzh.kanmeitu.adapter.PicViewAdapter;
@@ -18,7 +18,7 @@ import com.lzh.kanmeitu.util.ApiUtils;
 import java.util.List;
 import java.util.Map;
 
-public class PicViewActivity extends AppCompatActivity {
+public class PicViewActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     private Handler viewHandler = new Handler(Looper.myLooper()) {
 
@@ -72,6 +72,7 @@ public class PicViewActivity extends AppCompatActivity {
 
 //        显示图片的列表
         lv_pic = findViewById(R.id.lv_pic);
+        lv_pic.setOnItemClickListener(this);
 //        进度条
         ps_view = findViewById(R.id.ps_view);
 //        精确显示数据
@@ -115,5 +116,14 @@ public class PicViewActivity extends AppCompatActivity {
         }).start();
 
 
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        ImageView iv_view = view.findViewById(R.id.iv_view);
+        Bitmap bitmap = ((BitmapDrawable) iv_view.getDrawable()).getBitmap();
+        data.bitmap = bitmap;
+        Intent intent = new Intent(this, PicActivity.class);
+        startActivity(intent);
     }
 }
