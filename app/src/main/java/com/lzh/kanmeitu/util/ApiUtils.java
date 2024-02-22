@@ -9,6 +9,7 @@ import com.lzh.kanmeitu.bean.SearchResult;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ApiUtils {
 
@@ -59,5 +60,13 @@ public class ApiUtils {
         }
         Log.d("check", res.toString());
         return res;
+    }
+
+    public static Map<String, Integer> viewProcess () {
+
+        String processPath = "api/kanmeitu/view_process";
+        String processUrl = String.format(apiUrl, host, port, processPath, "");
+        String jsonStr = HttpUtils.getHttpResult(processUrl);
+        return JSON.parseObject(jsonStr, Map.class);
     }
 }
