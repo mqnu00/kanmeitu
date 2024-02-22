@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.view.View;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -39,9 +40,19 @@ public class PicViewActivity extends AppCompatActivity {
             super.handleMessage(msg);
 
             Map<String, Integer> res = (Map<String, Integer>) msg.obj;
-            ps_view.setMax(res.get("max"));
-            ps_view.setProgress(res.get("process"));
-            tv_process.setText(String.format("%d/%d", res.get("process"), res.get("max")));
+            Integer psMax = res.get("max");
+            Integer psNow = res.get("process");
+            ps_view.setMax(psMax);
+            ps_view.setProgress(psNow);
+            tv_process.setText(String.format("%d/%d", psNow, psMax));
+            if (psNow >= psMax) {
+
+                if (ps_view.getVisibility() == View.GONE) {
+                    ps_view.setVisibility(View.VISIBLE);
+                } else {
+                    ps_view.setVisibility(View.GONE);
+                }
+            }
         }
     };
     private PicPackage picPackage;
@@ -88,7 +99,10 @@ public class PicViewActivity extends AppCompatActivity {
                     try {
                         Thread.sleep(2000);
                         Map<String, Integer> res = ApiUtils.viewProcess();
-                        if (res.get("max") <= res.get("process")) downloadTag = false;
+                        if (res.get("max") <= res.get("process")) {
+
+                            downloadTag = false;
+                        }
                         Message message = new Message();
                         message.obj = res;
                         processHandler.sendMessage(message);
