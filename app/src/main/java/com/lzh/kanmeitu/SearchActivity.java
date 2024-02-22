@@ -2,8 +2,13 @@ package com.lzh.kanmeitu;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.*;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.lzh.kanmeitu.adapter.PicPackageAdapter;
 import com.lzh.kanmeitu.bean.PicPackage;
@@ -12,7 +17,6 @@ import com.lzh.kanmeitu.util.ApiUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
 
 public class SearchActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, View.OnClickListener {
 
@@ -25,6 +29,23 @@ public class SearchActivity extends AppCompatActivity implements AdapterView.OnI
     private TextView tv_total_page;
     private TextView tv_count;
     private EditText et_jump_page;
+
+    private Handler handler = new Handler(Looper.myLooper()){
+
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+
+            searchResult = (SearchResult) msg.obj;
+            Log.d("check", searchResult.toString());
+
+            tv_count.setText(String.format("%d组图", searchResult.getCount()));
+            tv_total_page.setText(String.format("%d页", searchResult.getTotalPage()));
+            List<PicPackage> picPackageList = searchResult.getPicPackageList();
+            PicPackageAdapter picPackageAdapter = new PicPackageAdapter(SearchActivity.this, picPackageList);
+            lv_search_result.setAdapter(picPackageAdapter);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,32 +82,16 @@ public class SearchActivity extends AppCompatActivity implements AdapterView.OnI
     @Override
     public void onClick(View view) {
 
-        // 创建一个线程池，可以根据需要调整大小
-        ExecutorService executorService = Executors.newFixedThreadPool(4);
-        // 提交一个Callable任务，返回一个Future对象
-        Future<SearchResult> future = executorService.submit(new Callable<SearchResult>() {
+        new Thread(new Runnable() {
             @Override
-            public SearchResult call() throws Exception {
-                // 调用PreviewUrlList函数，获取结果列表
-                // 返回结果给Future对象
+            public void run() {
                 int page = 0;
                 if (!et_jump_page.getText().toString().equals("")) page = Integer.parseInt(et_jump_page.getText().toString());
-                return ApiUtils.PreviewUrlList(et_search.getText().toString(), "", page - 1);
+                SearchResult res  = ApiUtils.PreviewUrlList(et_search.getText().toString(), "", page);
+                Message message = new Message();
+                message.obj = res;
+                handler.sendMessage(message);
             }
-        });
-// 在主线程中通过Future对象获取结果
-        try {
-            // 获取结果，如果任务还没完成，会阻塞等待
-            searchResult  = future.get();
-            tv_count.setText(String.format("%d组图", searchResult.getCount()));
-            tv_total_page.setText(String.format("%d页", searchResult.getTotalPage()));
-            List<PicPackage> picPackageList = searchResult.getPicPackageList();
-            PicPackageAdapter picPackageAdapter = new PicPackageAdapter(this, picPackageList);
-            lv_search_result.setAdapter(picPackageAdapter);
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-// 关闭线程池
-        executorService.shutdown();
+        }).start();
     }
 }
