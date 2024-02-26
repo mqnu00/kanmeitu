@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class ApiUtils {
 
-    private static final String host = "192.168.10.233";
+    private static final String host = "192.168.43.157";
 
     private static final String port = "8000";
 
