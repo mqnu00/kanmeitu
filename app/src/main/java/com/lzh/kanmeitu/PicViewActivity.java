@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.*;
 import androidx.annotation.NonNull;
@@ -14,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.lzh.kanmeitu.adapter.PicViewAdapter;
 import com.lzh.kanmeitu.bean.PicPackage;
 import com.lzh.kanmeitu.util.ApiUtils;
+import com.lzh.kanmeitu.util.ToastUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -25,40 +27,23 @@ public class PicViewActivity extends AppCompatActivity implements AdapterView.On
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-
-            picPackage.setPicUrls((List<String>) msg.obj);
-//        设置adapter
-            PicViewAdapter picViewAdapter = new PicViewAdapter(PicViewActivity.this, picPackage);
-            lv_pic.setAdapter(picViewAdapter);
-        }
-    };
-
-    private Handler processHandler = new Handler(Looper.myLooper()) {
-
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            super.handleMessage(msg);
-
-            Map<String, Integer> res = (Map<String, Integer>) msg.obj;
-            Integer psMax = res.get("max");
-            Integer psNow = res.get("process");
-            ps_view.setMax(psMax);
-            ps_view.setProgress(psNow);
-            tv_process.setText(String.format("%d/%d", psNow, psMax));
-            if (psNow >= psMax) {
-
-                if (ps_view.getVisibility() == View.GONE) {
-                    ps_view.setVisibility(View.VISIBLE);
-                } else {
-                    ps_view.setVisibility(View.GONE);
-                }
+            if (msg.what == 1) {
+                picPackage.setPicUrls((List<String>) msg.obj);
+                //        设置adapter
+                PicViewAdapter picViewAdapter = new PicViewAdapter(PicViewActivity.this, picPackage);
+                lv_pic.setAdapter(picViewAdapter);
+            } else {
+                ToastUtils.simpleToast(PicViewActivity.this, (String) msg.obj);
             }
         }
     };
+
     private PicPackage picPackage;
     private ListView lv_pic;
     private ProgressBar ps_view;
     private TextView tv_process;
+    private Thread viewThread;
+    private Thread processThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,43 +64,42 @@ public class PicViewActivity extends AppCompatActivity implements AdapterView.On
         tv_process = findViewById(R.id.tv_process);
 
 //        获取图片链接
-        new Thread(new Runnable() {
+        viewThread = new Thread(new Runnable() {
             @Override
             public void run() {
 
-                List<String> picUrlList = ApiUtils.picUrlList(picPackage.getUrl());
+                Map<String, Object> res = ApiUtils.picUrlList(picPackage.getUrl());
                 Message message = new Message();
-                message.obj = picUrlList;
-                viewHandler.sendMessage(message);
-            }
-        }).start();
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                boolean downloadTag = true;
-                while (downloadTag) {
-
-                    try {
-                        Thread.sleep(2000);
-                        Map<String, Integer> res = ApiUtils.viewProcess();
-                        if (res.get("max") <= res.get("process")) {
-
-                            downloadTag = false;
-                        }
-                        Message message = new Message();
-                        message.obj = res;
-                        processHandler.sendMessage(message);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-
+                if ((Boolean) res.get("status")) {
+                    message.what = 1;
+                    message.obj = res.get("data");
+                    viewHandler.sendMessage(message);
+                } else {
+                    message.what = 0;
+                    message.obj = res.get("msg");
+                    viewHandler.sendMessage(message);
                 }
+
             }
-        }).start();
+        });
+        viewThread.start();
 
 
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d("check", "?????1");
+        if (viewThread != null) {
+            Log.d("check", "?????2");
+            viewThread.interrupt();
+        }
+        if (processThread != null) {
+            Log.d("check", "?????3");
+            processThread.interrupt();
+        }
     }
 
     @Override

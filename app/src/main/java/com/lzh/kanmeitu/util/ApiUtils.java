@@ -8,12 +8,13 @@ import com.lzh.kanmeitu.bean.PicPackage;
 import com.lzh.kanmeitu.bean.SearchResult;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ApiUtils {
 
-    private static final String host = "192.168.43.157";
+    private static final String host = "192.168.232.223";
 
     private static final String port = "8000";
 
@@ -44,29 +45,31 @@ public class ApiUtils {
         result.setCount(jsonObject.getIntValue("count"));
         result.setTotalPage(jsonObject.getIntValue("totalPage"));
         result.setPicPackageList(picPackageList);
-        Log.d("check", result.toString());
         return result;
     }
 
-    public static List<String> picUrlList (String picPackageUrl) {
+    public static Map<String, Object> picUrlList (String picPackageUrl) {
 
         String viewF= String.format(viewArgs, picPackageUrl);
         String viewUrl = String.format(apiUrl, host, port, viewPath, viewF);
         String jsonStr = HttpUtils.getHttpResult(viewUrl);
-        JSONArray jsonArray = JSON.parseArray(jsonStr);
-        List<String> res = new ArrayList<>();
-        for (Object o: jsonArray) {
-            res.add((String) o);
+        JSONObject jsonObject = JSON.parseObject(jsonStr);
+        String msg = jsonObject.getString("msg");
+        Boolean status = jsonObject.getBoolean("status");
+        Map<String, Object> res = new HashMap<>();
+        res.put("msg", msg);
+        res.put("status", status);
+        if (status) {
+
+            JSONArray jsonArray = jsonObject.getJSONArray("data");
+            List<String> data = new ArrayList<>();
+            for (int i = 0; i < jsonArray.size(); i++) {
+
+                JSONArray now = JSONArray.parseArray(jsonArray.getString(i));
+                data.add(now.getString(2));
+            }
+            res.put("data", data);
         }
-        Log.d("check", res.toString());
         return res;
-    }
-
-    public static Map<String, Integer> viewProcess () {
-
-        String processPath = "api/kanmeitu/view_process";
-        String processUrl = String.format(apiUrl, host, port, processPath, "");
-        String jsonStr = HttpUtils.getHttpResult(processUrl);
-        return JSON.parseObject(jsonStr, Map.class);
     }
 }
